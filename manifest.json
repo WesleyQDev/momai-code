@@ -1,0 +1,513 @@
+{
+  "id": "momai-code",
+  "name": "MomAI Code",
+  "version": "0.3.0",
+      "description": "Ferramentas de código: terminal seguro, leitura e edição de arquivos, projetos de trabalho e regras do terminal com aprovação do usuário.",
+  "category": "developer",
+  "tags": [
+    "codigo",
+    "terminal",
+    "bash",
+    "arquivos",
+    "projetos",
+    "pastas",
+    "diretorios",
+    "downloads",
+    "documentos",
+    "desenvolvedor",
+    "analisar",
+    "otimizar",
+    "performance",
+    "desempenho",
+    "inspecionar",
+    "arquitetura",
+    "repositorio"
+  ],
+  "readme": {
+    "pt-BR": "README.md",
+    "en-US": "README.en-US.md",
+    "es": "README.es.md",
+    "fr": "README.fr.md",
+    "de": "README.de.md",
+    "it": "README.it.md"
+  },
+  "locales": {
+    "pt-BR": {
+      "name": "MomAI Code",
+  "description": "Ferramentas de código: terminal seguro, leitura e edição de arquivos, projetos de trabalho e regras do terminal com aprovação do usuário.",
+      "category": "developer",
+      "tags": [
+        "código",
+        "terminal",
+        "bash",
+        "arquivos",
+        "projetos",
+        "desenvolvedor"
+      ]
+    },
+    "en-US": {
+      "name": "MomAI Code",
+      "description": "Code tools: safe terminal, file read and edit, project workspaces, and ordered terminal rules with user approval.",
+      "category": "developer",
+      "tags": [
+        "code",
+        "terminal",
+        "bash",
+        "files",
+        "projects",
+        "developer"
+      ]
+    },
+    "es": {
+      "name": "MomAI Code",
+      "description": "Herramientas de código: terminal seguro, lectura y edición de archivos, proyectos de trabajo y reglas de terminal con aprobación del usuario.",
+      "category": "developer",
+      "tags": [
+        "código",
+        "terminal",
+        "bash",
+        "archivos",
+        "proyectos",
+        "desarrollador"
+      ]
+    },
+    "fr": {
+      "name": "MomAI Code",
+      "description": "Outils de code : terminal sécurisé, lecture et édition de fichiers, projets de travail et règles de terminal avec approbation de l'utilisateur.",
+      "category": "developer",
+      "tags": [
+        "code",
+        "terminal",
+        "bash",
+        "fichiers",
+        "projets",
+        "développeur"
+      ]
+    },
+    "de": {
+      "name": "MomAI Code",
+      "description": "Code-Werkzeuge: sicheres Terminal, Lesen und Bearbeiten von Dateien, Arbeitsprojekte und Terminal-Regeln mit Nutzerbestätigung.",
+      "category": "developer",
+      "tags": [
+        "code",
+        "terminal",
+        "bash",
+        "dateien",
+        "projekte",
+        "entwickler"
+      ]
+    },
+    "it": {
+      "name": "MomAI Code",
+      "description": "Strumenti di codice: terminale sicuro, lettura e modifica di file, progetti di lavoro e regole di terminale con approvazione dell'utente.",
+      "category": "developer",
+      "tags": [
+        "codice",
+        "terminale",
+        "bash",
+        "file",
+        "progetti",
+        "sviluppatore"
+      ]
+    }
+  },
+  "author": "WesleyQDev",
+  "app_icon": "app.png",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"16 18 22 12 16 6\"/><polyline points=\"8 6 2 12 8 18\"/></svg>",
+  "sidebar_icon": "icon.png",
+  "sidebar_icon_essential": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"16 18 22 12 16 6\"/><polyline points=\"8 6 2 12 8 18\"/></svg>",
+  "momai_compat": ">=1.17.0",
+  "sdkVersion": 1,
+  "background": true,
+  "backgroundScript": "worker.ts",
+  "permissions": [
+    "filesystem:read",
+    "filesystem:write",
+    "shell"
+  ],
+  "storage": {
+    "description": "Projetos de trabalho, pedidos pendentes de autorização, projeto ativo por conversa e regras do terminal.",
+    "locations": [
+      "settings"
+    ]
+  },
+  "ui": {
+    "page": "dist/page.js",
+    "pageType": "momai-code-page",
+    "chatComponents": [
+      {
+        "id": "momai-code-project-selector",
+        "entry": "dist/chat-project.js",
+        "position": "bottom"
+      }
+    ]
+  },
+  "chatHooks": {
+    "onPrompt": {
+      "tool": "code_chat_context"
+    },
+    "onRollback": {
+      "tool": "code_rollback"
+    }
+  },
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/projects/confirm",
+      "tool": "code_project_confirm"
+    },
+    {
+      "method": "POST",
+      "path": "/projects/cancel",
+      "tool": "code_project_cancel"
+    },
+    {
+      "method": "POST",
+      "path": "/settings",
+      "tool": "code_settings"
+    }
+  ],
+  "tools": [
+    {
+      "name": "code_bash",
+      "description": "Executa comando shell na raiz do projeto ativo aplicando as regras do terminal antes da execução. Comandos que casam com uma regra de bloqueio pausam a execução e pedem autorização ao usuário no chat; não reexecute nem contorne — aguarde a decisão. No Windows o shell é PowerShell (não use comandos POSIX como grep, sed ou head; prefira code_grep e code_glob para buscas).",
+      "permission": {
+        "policyTool": "code_command_policy"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "Comando a ser executado no shell."
+          },
+          "project": {
+            "type": "string",
+            "description": "Nome do projeto autorizado ou 'home'. Se omitido, usa o projeto ativo da conversa."
+          },
+          "timeoutMs": {
+            "type": "number",
+            "description": "Tempo limite de execução em milissegundos (padrão 30000)."
+          }
+        },
+        "required": [
+          "command"
+        ]
+      }
+    },
+    {
+      "name": "code_command_policy",
+      "description": "Hook interno de política: avalia o comando de code_bash contra as regras do terminal para o app decidir se pausa e pede autorização ao usuário. O host chama esta ferramenta automaticamente; não use diretamente.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "tool": {
+            "type": "string",
+            "description": "Ferramenta que está sendo avaliada."
+          },
+          "args": {
+            "type": "object",
+            "description": "Argumentos da chamada avaliada."
+          }
+        }
+      }
+    },
+    {
+      "name": "code_read",
+      "description": "Lê o conteúdo de um arquivo com paginação de linhas (offset e limit) dentro do perímetro autorizado. Um call cobre até 2000 linhas; quando houver mais, a resposta indica nextOffset.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Caminho do arquivo (relativo à raiz do projeto ou absoluto dentro do perímetro)."
+          },
+          "project": {
+            "type": "string",
+            "description": "Nome do projeto autorizado ou 'home'."
+          },
+          "offset": {
+            "type": "number",
+            "description": "Linha inicial da leitura, 1-indexed (padrão 1)."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Quantidade máxima de linhas a retornar (padrão 800, máx 2000). Prefira leituras amplas (até 800 linhas) em vez de fatias minúsculas para obter o contexto em uma única chamada."
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "code_write",
+      "description": "Cria ou substitui o conteúdo completo de um arquivo dentro do perímetro autorizado.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Caminho do arquivo a ser criado ou substituído."
+          },
+          "content": {
+            "type": "string",
+            "description": "Conteúdo textual completo a ser gravado no arquivo."
+          },
+          "project": {
+            "type": "string",
+            "description": "Nome do projeto autorizado ou 'home'."
+          }
+        },
+        "required": [
+          "path",
+          "content"
+        ]
+      }
+    },
+    {
+      "name": "code_edit",
+      "description": "Edita arquivo substituindo trecho exato de texto (target) por outro (replacement) ou múltiplos blocos atômicos via chunks.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Caminho do arquivo a ser editado."
+          },
+          "target": {
+            "type": "string",
+            "description": "Texto exato a ser substituído no arquivo."
+          },
+          "replacement": {
+            "type": "string",
+            "description": "Novo texto que substituirá o target."
+          },
+          "replaceAll": {
+            "type": "boolean",
+            "description": "Se verdadeiro, substitui todas as ocorrências do target. Se falso, exige correspondência única."
+          },
+          "chunks": {
+            "type": "array",
+            "description": "Lista de substituições atômicas para editar múltiplos trechos em uma única chamada: [{ target, replacement, replaceAll? }].",
+            "items": {
+              "type": "object",
+              "properties": {
+                "target": { "type": "string" },
+                "replacement": { "type": "string" },
+                "replaceAll": { "type": "boolean" }
+              },
+              "required": ["target", "replacement"]
+            }
+          },
+          "project": {
+            "type": "string",
+            "description": "Nome do projeto autorizado ou 'home'."
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "code_list",
+      "description": "Lista arquivos e diretórios respeitando o perímetro de acesso.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Diretório a ser listado (padrão '.')."
+          },
+          "project": {
+            "type": "string",
+            "description": "Nome do projeto autorizado ou 'home'."
+          },
+          "depth": {
+            "type": "number",
+            "description": "Profundidade de listagem de pastas (padrão 1, máx 3)."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Quantidade máxima de entradas retornadas (padrão 150, máx 500)."
+          }
+        }
+      }
+    },
+    {
+      "name": "code_attach",
+      "description": "Copia um arquivo anexado na conversa (imagem ou documento) para dentro do projeto autorizado. Use quando o usuário pedir para adicionar, salvar ou colocar um anexo no projeto. O caminho da cópia de trabalho do anexo aparece no prompt do usuário como '[Cópia em disco: ...]' ou '[Imagem anexada em disco: ... — cópia de trabalho: ...]'; passe esse caminho ou o nome do arquivo em 'attachment'.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "attachment": {
+            "type": "string",
+            "description": "Caminho da cópia de trabalho do anexo (como aparece no prompt) ou o nome do arquivo anexado."
+          },
+          "destination": {
+            "type": "string",
+            "description": "Arquivo ou pasta de destino dentro do projeto (padrão: raiz do projeto ativo; sem projeto ativo o destino é obrigatório). Um caminho sem extensão é tratado como pasta."
+          },
+          "fileName": {
+            "type": "string",
+            "description": "Nome a usar no destino (padrão: nome original do anexo)."
+          },
+          "overwrite": {
+            "type": "boolean",
+            "description": "Se verdadeiro, substitui um arquivo já existente no destino."
+          },
+          "project": {
+            "type": "string",
+            "description": "Nome do projeto autorizado ou 'home'."
+          }
+        },
+        "required": [
+          "attachment"
+        ]
+      }
+    },
+    {
+      "name": "code_projects",
+      "description": "Lista 'Sem projeto (Home)' e os projetos autorizados, indicando qual está ativo na conversa atual.",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "code_chat_context",
+      "description": "Hook interno de prompt: retorna o projeto ativo selecionado para esta conversa e suas convenções.",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "code_project_use",
+      "description": "Define qual projeto autorizado será o ativo para a conversa atual e limita as ferramentas à pasta dele ('home' volta ao acesso geral). Só alterna entre projetos já liberados. Ao ativar um projeto, carrega o AGENTS.md do repositório no contexto, quando existir.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "project": {
+            "type": "string",
+            "description": "Nome do projeto autorizado ou 'home' para voltar ao modo Sem projeto."
+          }
+        },
+        "required": [
+          "project"
+        ]
+      }
+    },
+    {
+      "name": "code_project_request",
+      "description": "Adiciona uma pasta como projeto. Pastas dentro da Home (ou de um projeto já autorizado) são registradas direto, sem card; caminhos fora da área autorizada exigem confirmação no card. Use code_project_use depois para ativar o projeto e limitar a conversa a ele.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Caminho absoluto da pasta do novo projeto."
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome sugerido para o projeto."
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "code_glob",
+      "description": "Busca arquivos por padrão glob dentro do perímetro autorizado, ignorando pastas de dependências. Suporta '*' (um segmento), '**' (qualquer profundidade) e chaves de alternativa.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "Padrão de busca (ex: '*.ts', 'src/**/*.tsx')."
+          },
+          "path": {
+            "type": "string",
+            "description": "Diretório raiz da busca (padrão '.')."
+          },
+          "project": {
+            "type": "string",
+            "description": "Nome do projeto autorizado ou 'home'."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Quantidade máxima de arquivos retornados (padrão 50, máx 200)."
+          }
+        }
+      }
+    },
+    {
+      "name": "code_grep",
+      "description": "Busca conteúdo textual ou expressão regular recursivamente em arquivos do perímetro autorizado. Aceita um diretório ou um arquivo específico e um filtro 'include' de caminho (ex: 'src/**/*.ts').",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Texto ou regex a ser localizado."
+          },
+          "path": {
+            "type": "string",
+            "description": "Diretório ou arquivo onde iniciar a busca (padrão '.')."
+          },
+          "project": {
+            "type": "string",
+            "description": "Nome do projeto autorizado ou 'home'."
+          },
+          "isRegex": {
+            "type": "boolean",
+            "description": "Se verdadeiro, interpreta query como expressão regular."
+          },
+          "include": {
+            "type": "string",
+            "description": "Filtro glob de caminho dos arquivos a considerar (ex: '*.ts', 'src/**/*.py')."
+          },
+          "caseSensitive": {
+            "type": "boolean",
+            "description": "Se verdadeiro, diferencia maiúsculas de minúsculas (padrão falso)."
+          },
+          "context": {
+            "type": "number",
+            "description": "Linhas de contexto antes e depois de cada correspondência (padrão 0, máx 3)."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Quantidade máxima de correspondências (padrão 30, máx 100)."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "code_rollback",
+      "description": "Hook interno de reversão: desfaz alterações de código e restaura arquivos editados até a bolha/checkpoint indicado.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "threadId": {
+            "type": "string",
+            "description": "Identificador da conversa revertida."
+          },
+          "messageId": {
+            "type": "string",
+            "description": "ID da mensagem/bolha clicada."
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Timestamp da bolha para corte de reversão."
+          }
+        }
+      }
+    }
+  ]
+}
