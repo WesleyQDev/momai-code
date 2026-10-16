@@ -7,7 +7,7 @@ Strumenti di programmazione completi per il tuo assistente MomAI: terminale sicu
 * **Esecuzione Sicura nel Terminale:** Permette all'assistente di eseguire comandi di shell (PowerShell o Prompt dei comandi su Windows, Bash su Linux/macOS) direttamente nella cartella del tuo progetto.
 * **Progetti di Lavoro Isolati:** Di base MomAI opera nella cartella personale dell'utente (Home). Puoi autorizzare cartelle extra tramite la pagina delle impostazioni o confermando la richiesta in chat.
 * **Regole di Sicurezza del Terminale:** I comandi rischiosi (cancellazione ricorsiva, formattazione dischi o reset drastici di git) vengono bloccati prima dell'esecuzione. Se un comando è davvero necessario, MomAI chiede la tua conferma con un clic ("Esegui una volta" o "Consenti sempre").
-* **Lettura e Modifica Precisa dei File:** Strumenti per consultare file con righe numerate, sostituire porzioni di codice con precisione chirurgica, creare novos file e cercare nel progetto, con punti di ripristino e annullamento automatico al rollback dei messaggi nella chat.
+* **Lettura e Modifica Precisa dei File:** Strumenti per consultare file con righe numerate, sostituire porzioni di codice con precisione chirurgica, creare nuovi file e cercare nel progetto, con punti di ripristino e annullamento automatico al rollback dei messaggi nella chat.
 * **Allegati della Chat nel Progetto:** Immagini e documenti allegati nella chat ricevono una copia di lavoro e l'assistente può inserirli nel progetto, senza spostare file a mano.
 
 ## Esempi d'uso
