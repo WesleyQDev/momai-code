@@ -1,24 +1,25 @@
 # MomAI Code
 
-Umfassende Entwickler-Werkzeuge für Ihren MomAI-Assistenten: sichere Terminal-Ausführung, Datei-Inspektion und -Bearbeitung, isolierte Arbeitsprojekte und Terminal-Regeln mit interaktiver Nutzerbestätigung.
+MomAI Code lässt den Assistenten an Ihrem Code arbeiten. Er führt Befehle im Terminal aus, liest und bearbeitet Dateien und bleibt in dem Projektordner, den Sie freigegeben haben.
 
-## Funktionen der Erweiterung
+## Was Sie damit machen können
 
-* **Sichere Terminal-Ausführung:** Ermöglicht die Ausführung von Shell-Befehlen (PowerShell oder Eingabeaufforderung unter Windows, Bash unter Linux/macOS) direkt im Projektverzeichnis.
-* **Isolierte Arbeitsprojekte:** Standardmäßig agiert MomAI im Benutzer-Stammverzeichnis (Home). Zusätzliche Ordner können über die Einstellungen oder per Bestätigungskarte im Chat freigegeben werden.
-* **Sicherheitsregeln für das Terminal:** Destruktive Befehle (rekursives Löschen, Datenträgerformatierung, Git-Hard-Resets) werden vor der Ausführung abgefangen. Bei Bedarf fragt MomAI nach Erlaubnis ("Einmalig ausführen" oder "Immer erlauben").
-* **Präzises Lesen und Bearbeiten:** Werkzeuge zur paginierten Einsicht in Code-Dateien, zum punktgenauen Ersetzen von Zeichenfolgen und zur Code-Suche, mit Checkpoints und automatischer Wiederherstellung beim Rückgängigmachen im Chat.
-* **Chat-Anhänge direkt ins Projekt:** Bilder und Dokumente aus dem Chat erhalten eine Arbeitskopie und der Assistent kann sie in Ihr Projekt legen – ganz ohne manuelles Verschieben.
+- Befehle im Projektordner ausführen, unter Windows mit PowerShell oder Eingabeaufforderung und unter Linux oder macOS mit Bash.
+- Nur in Projekten arbeiten, die Sie freigegeben haben. Ohne freigegebenes Projekt bleibt MomAI in Ihrem Benutzerordner. Ist ein Ordner noch nicht erlaubt, fragt sie im Chat nach.
+- Gefährliche Befehle stoppen, zum Beispiel rekursives Löschen, Formatieren von Datenträgern oder harte Git-Resets. Wenn Sie einen Befehl brauchen, erlauben Sie ihn einmal oder dauerhaft.
+- Dateien in nummerierten Abschnitten lesen, gezielte Änderungen vornehmen, neue Dateien anlegen und das ganze Projekt durchsuchen.
+- Änderungen zusammen mit der Chat-Nachricht rückgängig machen, die sie ausgelöst hat.
+- Bilder und Dokumente aus dem Chat in das Projekt übernehmen, ohne Dateien von Hand zu verschieben.
 
-## Anwendungsbeispiele
+## Beispiele
 
-* *"Zeige die Dateien im Projekt MomAI und prüfe die package.json"*
-* *"Korrigiere den Import-Fehler in src/index.ts"*
-* *"Führe die Modultests aus und berichte über Fehler"*
-* *"Lege das angehängte Bild in src/assets ab"*
-* *"Lass uns im Verzeichnis D:\MeineWebseite arbeiten"*
+- "Zeige die Dateien im Projekt MomAI und prüfe, was sich in package.json geändert hat."
+- "Repariere den defekten Import in src/index.ts."
+- "Führe die Tests aus und sage mir, welche fehlgeschlagen sind."
+- "Lege das angehängte Bild in src/assets ab."
+- "Arbeiten wir im Ordner D:\MeineSite."
 
-## Erforderliche Berechtigungen
+## Berechtigungen
 
-* **Terminal (Shell):** Zur Ausführung von Entwicklungsbefehlen und Skripten auf Ihrem Computer.
-* **Dateisystem (Lesen und Schreiben):** Zum Lesen und Bearbeiten von Projektdateien.
+- **Terminal:** zum Bauen, Testen, für Git und für Skripte auf Ihrem Computer.
+- **Dateien (Lesen und Schreiben):** zum Lesen des Codes, Speichern von Änderungen und Anlegen von Dateien in freigegebenen Projekten.

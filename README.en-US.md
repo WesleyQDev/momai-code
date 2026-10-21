@@ -1,24 +1,25 @@
 # MomAI Code
 
-Complete coding tools for your MomAI assistant: safe terminal execution, file inspection and surgical editing, isolated project workspaces, and terminal rules with human-in-the-loop approval.
+MomAI Code gives your assistant room to work on code. It runs terminal commands, reads and edits files, and stays inside the project folder you allowed.
 
-## What this extension does
+## What you can do
 
-* **Safe Terminal Execution:** Enables the assistant to run shell commands (PowerShell or Command Prompt on Windows, Bash on Linux/macOS) directly in your project root.
-* **Isolated Work Projects:** By default, MomAI operates strictly in your user home folder. When you want to work on a specific codebase, register the folder in settings or approve it directly in chat via an interactive confirmation card.
-* **Terminal Safety Rules:** Dangerous commands (such as recursive folder deletion, disk formatting, or hard git resets) are caught before execution. If a command is genuinely required, MomAI asks for your consent with a single click: "Run once" or "Always allow".
-* **Precise File Reading and Editing:** Tools to inspect files with paginated line numbers, perform surgical string replacements, create new files, and search across files using patterns, with automatic checkpointing and rollback when undoing chat turns.
-* **Chat Attachments Into Your Project:** Images and documents attached in chat get a working copy, and the assistant can place them inside your project for you — no manual file moving.
+- Run commands inside the project folder on Windows (PowerShell or Command Prompt) and on Linux or macOS (Bash).
+- Work only in projects you approved. Without an approved project, MomAI stays in your home folder. If a folder is not allowed yet, it asks in chat.
+- Stop dangerous commands such as recursive deletes, disk formatting, and hard Git resets. When you need one, you can allow it once or always.
+- Read files by numbered sections, make targeted replacements, create files, and search the whole project.
+- Undo edits together with the chat message that made them.
+- Move images and documents from chat into the project without moving files by hand.
 
-## Everyday Examples
+## Examples
 
-* *"List the files in project MomAI and check what changed in package.json"*
-* *"Fix the import error in src/index.ts by replacing the legacy path with the new one"*
-* *"Run the project unit tests and report which ones failed"*
-* *"Add the image I attached into src/assets"*
-* *"Let's work on folder D:\MySite"* (displays an authorization card if the project hasn't been added yet)
+- "List the files in the MomAI project and check what changed in package.json."
+- "Fix the broken import in src/index.ts."
+- "Run the tests and tell me which ones failed."
+- "Put the image I attached into src/assets."
+- "Let's work in D:\MySite."
 
-## Requested Permissions
+## Permissions
 
-* **Terminal (Shell):** Required to run build commands, tests, git operations, and code scripts on your machine.
-* **File System (Read & Write):** Required to inspect code, write edits, and create files in your authorized project folders.
+- **Terminal:** to build, run tests, use Git, and run scripts on your computer.
+- **Files (read and write):** to read code, save edits, and create files in approved projects.

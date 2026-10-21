@@ -1,24 +1,25 @@
 # MomAI Code
 
-Outils de développement complets pour votre assistant MomAI : terminal sécurisé, inspection et modification chirurgicale de fichiers, projets isolés et règles de terminal avec approbation interactive de l'utilisateur.
+MomAI Code laisse votre assistant travailler sur votre code. Il exécute des commandes dans le terminal, lit et modifie des fichiers et reste dans le dossier du projet que vous avez autorisé.
 
-## Ce que fait cette extension
+## Ce que vous pouvez faire
 
-* **Exécution Sécurisée dans le Terminal :** Permet à l'assistant d'exécuter des commandes shell (PowerShell/CMD sous Windows, Bash sous Linux/macOS) dans le dossier de votre projet.
-* **Projets de Travail Isolés :** Par défaut, MomAI fonctionne strictement dans votre dossier utilisateur (Home). Débloquez des projets supplémentaires dans les paramètres ou confirmez directement dans le chat.
-* **Règles de Sécurité du Terminal :** Les commandes à risque (suppression récursive, formatage de disques, réinitialisations git) sont bloquées en amont. En cas de besoin réel, MomAI sollicite votre consentement en un clic ("Exécuter une fois" ou "Toujours autoriser").
-* **Lecture et Édition Précises de Fichiers :** Outils pour paginer la lecture de code, remplacer des blocs de texte exacts, créer de nouveaux fichiers et rechercher des motifs de code, avec points de restauration et annulation automatique lors du retour arrière dans le chat.
-* **Pièces Jointes du Chat dans le Projet :** Les images et documents joints dans le chat disposent d'une copie de travail et l'assistant peut les placer dans votre projet, sans déplacement manuel.
+- Lancer des commandes dans le dossier du projet sous Windows (PowerShell ou Invite de commandes) et sous Linux ou macOS (Bash).
+- Travailler uniquement dans les projets que vous avez autorisés. Sans projet autorisé, MomAI reste dans votre dossier personnel. Si un dossier ne l'est pas encore, elle le demande dans le chat.
+- Bloquer les commandes dangereuses, comme la suppression récursive de dossiers, le formatage de disques ou un reset Git brutal. Si vous avez vraiment besoin d'une commande, vous l'autorisez une fois ou pour toujours.
+- Lire les fichiers par sections numérotées, faire des remplacements ciblés, créer des fichiers et chercher dans tout le projet.
+- Annuler les modifications en même temps que le message du chat qui les a créées.
+- Déplacer des images et des documents du chat vers le projet sans manipuler les fichiers à la main.
 
-## Exemples du quotidien
+## Exemples
 
-* *"Liste les fichiers du projet MomAI et vérifie les changements dans package.json"*
-* *"Corrige l'erreur d'import dans src/index.ts"*
-* *"Lance les tests unitaires et résume les échecs"*
-* *"Ajoute l'image que j'ai jointe dans src/assets"*
-* *"Travaillons sur le dossier D:\MonSite"*
+- « Liste les fichiers du projet MomAI et regarde ce qui a changé dans package.json. »
+- « Corrige l'import cassé dans src/index.ts. »
+- « Lance les tests et dis-moi lesquels ont échoué. »
+- « Place l'image que j'ai jointe dans src/assets. »
+- « Travaillons dans le dossier D:\MonSite. »
 
-## Permissions requises
+## Autorisations
 
-* **Terminal (Shell) :** Nécessaire pour exécuter les builds, tests et opérations git.
-* **Système de fichiers (Lecture et Écriture) :** Nécessaire pour analyser et mettre à jour le code de vos projets.
+- **Terminal :** pour compiler, lancer les tests, utiliser Git et exécuter des scripts sur votre ordinateur.
+- **Fichiers (lecture et écriture) :** pour lire le code, enregistrer les modifications et créer des fichiers dans les projets autorisés.
