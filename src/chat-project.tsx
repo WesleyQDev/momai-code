@@ -162,7 +162,13 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
         title={activeProject ? activeProject.name : 'Sem Projeto'}
       >
         {/* Ícone de código/projeto */}
-        <div className="w-4 h-4 rounded flex items-center justify-center bg-accent/15 text-accent shrink-0">
+        <div
+          className={`w-4 h-4 rounded flex items-center justify-center border shrink-0 transition-colors ${
+            activeProject
+              ? 'bg-input border-border/70 text-text'
+              : 'bg-input/60 border-border/40 text-text-muted'
+          }`}
+        >
           <svg
             className="w-2.5 h-2.5"
             viewBox="0 0 24 24"
@@ -222,15 +228,15 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
 
       {/* Dropdown Menu suspenso */}
       {isOpen && (
-        <div className="absolute bottom-full mb-1.5 left-0 min-w-[210px] max-w-[280px] max-h-[260px] overflow-y-auto bg-card border border-border/70 rounded-xl shadow-xl p-1 z-50 text-xs flex flex-col gap-0.5 custom-scrollbar animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute bottom-full mb-1.5 left-0 min-w-[180px] max-w-[240px] max-h-[260px] overflow-y-auto bg-card border border-border/60 rounded shadow-xl py-1.5 z-50 text-xs flex flex-col custom-scrollbar animate-in fade-in slide-in-from-bottom-2 duration-200">
           {/* Opção: Sem Projeto */}
           <button
             type="button"
             onClick={() => handleSelectProject(null)}
-            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors cursor-pointer border-none ${
+            className={`w-full flex items-center gap-2 px-3.5 py-1.5 text-left text-xs font-semibold transition-colors cursor-pointer border-none ${
               !activeProject
-                ? 'bg-accent/15 text-accent font-medium'
-                : 'text-text hover:bg-input/60'
+                ? 'bg-input text-text font-bold'
+                : 'text-text hover:bg-input/50'
             }`}
           >
             <svg
@@ -246,7 +252,7 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
             <span className="truncate flex-1">Sem Projeto</span>
-            {!activeProject && <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />}
+            {!activeProject && <span className="w-1.5 h-1.5 rounded-full bg-text-muted shrink-0" />}
           </button>
 
           {/* Lista de Projetos Cadastrados */}
@@ -262,18 +268,24 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
                 key={proj.id}
                 type="button"
                 onClick={() => handleSelectProject(proj.id)}
-                className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors cursor-pointer border-none ${
+                className={`w-full flex items-center gap-2 px-3.5 py-1.5 text-left text-xs font-semibold transition-colors cursor-pointer border-none ${
                   isSelected
-                    ? 'bg-accent/15 text-accent font-medium'
-                    : 'text-text hover:bg-input/60'
+                    ? 'bg-input text-text font-bold'
+                    : 'text-text hover:bg-input/50'
                 }`}
                 title={proj.path}
               >
-                <div className="w-4 h-4 rounded bg-input/80 border border-border/40 flex items-center justify-center text-[10px] font-semibold shrink-0 text-text-muted">
+                <div
+                  className={`w-4 h-4 rounded border flex items-center justify-center text-[10px] font-semibold shrink-0 ${
+                    isSelected
+                      ? 'bg-card border-border/70 text-text'
+                      : 'bg-input/80 border-border/40 text-text-muted'
+                  }`}
+                >
                   {initial}
                 </div>
                 <span className="truncate flex-1">{proj.name}</span>
-                {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />}
+                {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-text-muted shrink-0" />}
               </button>
             )
           })}
@@ -286,7 +298,7 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
             type="button"
             disabled={isAdding}
             onClick={handleAddProject}
-            className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left text-text-muted hover:text-text hover:bg-input/60 active:bg-input transition-colors cursor-pointer border-none disabled:opacity-50"
+            className="w-full flex items-center gap-2 px-3.5 py-1.5 text-left text-xs font-semibold text-text hover:bg-input/50 active:bg-input transition-colors cursor-pointer border-none disabled:opacity-50"
           >
             <svg
               className="w-3.5 h-3.5 shrink-0"
