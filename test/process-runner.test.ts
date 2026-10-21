@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const require = createRequire(import.meta.url)
-const { truncateOutput, resolveWindowsPowerShell } = require('../core/process-runner.ts')
+const { truncateOutput, resolveWindowsPowerShell, runProcess } = require('../core/process-runner.ts')
 
 describe('truncateOutput', () => {
   it('returns short output untouched', () => {
@@ -33,4 +33,17 @@ describe.runIf(process.platform === 'win32')('resolveWindowsPowerShell', () => {
       expect(fs.statSync(shell).isFile()).toBe(true)
     }
   })
+
+  it('resolves executables in PowerShell even if PATHEXT was missing in parent environment', async () => {
+    const origPathext = process.env.PATHEXT
+    try {
+      delete process.env.PATHEXT
+      const res = await runProcess('git --version', process.cwd())
+      expect(res.exitCode).toBe(0)
+      expect(res.stdout).toContain('git version')
+    } finally {
+      if (origPathext) process.env.PATHEXT = origPathext
+    }
+  })
 })
+

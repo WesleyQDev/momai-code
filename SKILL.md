@@ -36,11 +36,11 @@ Terminal, leitura, listagem, gravação, edição e busca de arquivos no ambient
 
 ## 3. Leitura, edição e busca
 
-1. **`code_read`**: para arquivos longos use `offset`/`limit` (padrão 800 linhas, máx 2000); nunca blocos minúsculos; se `hasMore`, siga de `nextOffset`.
+1. **`code_read`**: para arquivos use `offset`/`limit` com fatias amplas (padrão 800 linhas, máx 2000); evite blocos minúsculos (10–20 linhas) que omitem contexto; se `hasMore`, siga de `nextOffset`.
 2. **`code_edit`**: prefira substituição exata a reescrever; `target` com contexto suficiente para ser único; `replaceAll: true` para todas as ocorrências.
 3. **`code_write`**: arquivos novos ou reescrita completa; diretórios intermediários são criados sozinhos.
 4. **`code_list`** = pastas imediatas; **`code_glob`** por padrão (`*` = segmento, `**` = profundidade); **`code_grep`** = símbolos/erros (`path` aceita arquivo ou pasta, `include` filtra, `context` = linhas ao redor). `node_modules`, `.git`, `dist` etc. são ignorados nas varreduras.
-5. **Moderação**: 5–8 ferramentas por turno; ao localizar o relevante, pare e responda. Não leia dezenas de arquivos se a dúvida é sobre o código principal.
+5. **Viés para ação e progresso**: quando o usuário solicitar alteração pontual de código ou UI, localize o componente alvo, aplique a modificação com `code_edit`/`code_write` e valide. Não entre em loops de leitura sem aplicar mudanças nem hesite para pedir confirmações triviais de arquitetura quando o pedido for direto.
 
 ## 4. Anexos (`code_attach`)
 

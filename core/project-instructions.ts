@@ -3,7 +3,7 @@ const path = require('node:path')
 const { isInsideOrEqual } = require('./perimeter.ts')
 
 /** Instruction files read from the project root when the agent works on it. */
-const PROJECT_INSTRUCTION_FILES = ['AGENTS.md']
+const PROJECT_INSTRUCTION_FILES = ['AGENTS.md', 'CLAUDE.md', '.github/copilot-instructions.md']
 /** Bounds so a huge instruction file cannot flood the context in one tool call. */
 const MAX_INSTRUCTION_FILE_BYTES = 512 * 1024
 const MAX_INSTRUCTION_CHARS = 20000
@@ -17,7 +17,7 @@ interface ProjectInstructions {
 }
 
 /**
- * Reads the project's agent instruction file (AGENTS.md). Missing or unreadable
+ * Reads the project's agent instruction file (AGENTS.md, CLAUDE.md, etc.). Missing or unreadable
  * files never block a tool call.
  */
 function readProjectInstructions(projectPath: string): ProjectInstructions | null {
@@ -28,7 +28,7 @@ function readProjectInstructions(projectPath: string): ProjectInstructions | nul
       if (!stat.isFile() || stat.size > MAX_INSTRUCTION_FILE_BYTES) continue
       let content = fs.readFileSync(fullPath, 'utf-8').replace(/^\uFEFF/, '')
       if (content.length > MAX_INSTRUCTION_CHARS) {
-        content = `${content.slice(0, MAX_INSTRUCTION_CHARS)}\n\n[... ${file} truncado; continue com code_read em '${file}']`
+        content = `${content.slice(0, MAX_INSTRUCTION_CHARS)}\n\n[... ${file} truncado (truncated at ${MAX_INSTRUCTION_CHARS} chars)]`
       }
       return { file, content }
     } catch {
@@ -90,7 +90,7 @@ async function attachProjectInstructions(
   pruneAttachments(attachments)
   await stateManager.save(state)
 
-  return `\n\nInstruções do projeto (${instructions.file}) — convenções do repositório '${project.name}' que você deve seguir:\n\n${instructions.content}`
+  return `\n\nInstruções do projeto / Project instructions (${instructions.file}) — repository conventions for '${project.name}':\n\n${instructions.content}\n\nNote: These project rules are mounted in your context. Do not call code_read to re-read ${instructions.file} unless explicitly asked to modify it.`
 }
 
 /**

@@ -154,13 +154,26 @@ async function runProcess(
     let timedOut = false
     let timer: NodeJS.Timeout | null = null
 
+    const runEnv = {
+      ...process.env,
+      PAGER: 'cat',
+      ...(process.platform === 'win32'
+        ? {
+            PATHEXT: process.env.PATHEXT || '.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC',
+            SystemRoot: process.env.SystemRoot || process.env.WINDIR || 'C:\\Windows',
+            SystemDrive: process.env.SystemDrive || 'C:',
+            COMSPEC: process.env.COMSPEC || 'C:\\Windows\\System32\\cmd.exe'
+          }
+        : {})
+    }
+
     try {
       child = spawn(shellExecutable, shellArgs, {
         cwd,
         detached: process.platform !== 'win32',
         windowsHide: true,
         stdio: ['ignore', 'pipe', 'pipe'],
-        env: { ...process.env, PAGER: 'cat' }
+        env: runEnv
       })
     } catch (err: any) {
       resolve({

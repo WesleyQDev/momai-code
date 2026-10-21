@@ -99,7 +99,7 @@ async function executeCodeProjectUse(
 
   return {
     ok: true,
-    instruction: `Projeto ativo desta conversa definido para: ${matched.name} (${matched.path}). As ferramentas ficam limitadas a essa pasta; use code_project_use { project: "home" } para voltar ao acesso geral.${instructions}`
+    instruction: `Projeto ativo / Active project for this conversation: ${matched.name} (${matched.path}). Code tools are scoped to this directory; use code_project_use { project: "home" } to return to general access.${instructions}`
   }
 }
 
@@ -316,7 +316,7 @@ async function executeCodeChatContext(
 
   return {
     ok: true,
-    instruction: `[MomAI Code - Projeto Ativo: "${matched.name}"]\nO usuário selecionou o projeto "${matched.name}" (${matched.path}) para esta conversa. Execute as ferramentas de código (code_read, code_grep, code_glob, code_bash, etc.) com escopo padrão nesta pasta, sem pedir confirmação do projeto.${instructions}`
+    instruction: `[MomAI Code - Projeto Ativo / Active Project: "${matched.name}"]\nThe user selected project "${matched.name}" (${matched.path}) for this conversation. Execute code tools (code_read, code_grep, code_glob, code_bash, etc.) within this directory without asking for project confirmation.${instructions}`
   }
 }
 

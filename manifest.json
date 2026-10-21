@@ -214,7 +214,7 @@
     },
     {
       "name": "code_read",
-      "description": "Lê o conteúdo de um arquivo com paginação de linhas (offset e limit) dentro do perímetro autorizado. Um call cobre até 2000 linhas; quando houver mais, a resposta indica nextOffset.",
+      "description": "Lê o conteúdo de um arquivo com linhas numeradas (1-indexed). Retorna até 800 linhas por padrão (máx 2000). Sempre prefira leituras amplas para obter o contexto do componente em vez de múltiplas requisições de fatias minúsculas.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -232,7 +232,7 @@
           },
           "limit": {
             "type": "number",
-            "description": "Quantidade máxima de linhas a retornar (padrão 800, máx 2000). Prefira leituras amplas (até 800 linhas) em vez de fatias minúsculas para obter o contexto em uma única chamada."
+            "description": "Quantidade máxima de linhas a retornar (padrão 800, máx 2000). Evite blocos minúsculos (ex: 10-20 linhas) ao inspecionar componentes; solicite 200-800 linhas para capturar o contexto completo em uma única chamada."
           }
         },
         "required": [
