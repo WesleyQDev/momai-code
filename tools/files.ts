@@ -86,6 +86,11 @@ async function readSliceViaStream(
 /** Reads return up to this many lines per call, sized so one call covers most files. */
 const DEFAULT_READ_LINES = 800
 const MAX_READ_LINES = 2000
+/**
+ * Smaller requested windows are widened to this size: every extra slice costs a
+ * full model round trip, while a few hundred more lines cost almost nothing.
+ */
+const MIN_READ_LINES = 300
 /** Pagination still loads the file into memory; huge files are refused up front. */
 const MAX_READABLE_FILE_BYTES = 20 * 1024 * 1024
 
@@ -104,10 +109,10 @@ async function executeCodeRead(
   }
 
   const offset = typeof args.offset === 'number' && args.offset > 0 ? args.offset : 1
-  const limit =
-    typeof args.limit === 'number' && args.limit > 0
-      ? Math.min(args.limit, MAX_READ_LINES)
-      : DEFAULT_READ_LINES
+  const requestedLimit =
+    typeof args.limit === 'number' && args.limit > 0 ? args.limit : DEFAULT_READ_LINES
+  const limit = Math.min(Math.max(requestedLimit, MIN_READ_LINES), MAX_READ_LINES)
+  const limitWidened = limit > requestedLimit
 
   const state = await stateManager.load()
   const perimeter = validatePerimeter(filePath, state, args.project, context?.threadId, {
@@ -163,6 +168,11 @@ async function executeCodeRead(
       returnedLines: slicedLines.length,
       hasMore,
       ...(hasMore ? { nextOffset: startIndex + slicedLines.length + 1 } : {}),
+      ...(limitWidened && slicedLines.length > requestedLimit
+        ? {
+            hint: `Leitura ampliada de ${requestedLimit} para ${limit} linhas (mínimo ${MIN_READ_LINES}) para evitar rodadas extras; o contexto ao redor já está incluído.`
+          }
+        : {}),
       ...projectFields,
       content: formattedLines
     })

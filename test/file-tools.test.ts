@@ -184,7 +184,7 @@ describe('File and Project Tools', () => {
 
   it('reads stream slices efficiently with accurate line count', async () => {
     const filePath = 'lines.txt'
-    const totalLines = 150
+    const totalLines = 1000
     const content = Array.from({ length: totalLines }, (_, i) => `Line ${i + 1}`).join('\n')
 
     await executeCodeWrite(
@@ -193,17 +193,52 @@ describe('File and Project Tools', () => {
     )
 
     const readRes = await executeCodeRead(
-      { path: filePath, project: 'TestProject', offset: 50, limit: 10 },
+      { path: filePath, project: 'TestProject', offset: 50, limit: 400 },
       stateManager
     )
     expect(readRes.ok).toBe(true)
     const parsed = JSON.parse(readRes.instruction)
-    expect(parsed.totalLines).toBe(150)
-    expect(parsed.returnedLines).toBe(10)
+    expect(parsed.totalLines).toBe(1000)
+    expect(parsed.returnedLines).toBe(400)
     expect(parsed.hasMore).toBe(true)
+    expect(parsed.nextOffset).toBe(450)
     expect(parsed.content).toContain('50 | Line 50')
-    expect(parsed.content).toContain('59 | Line 59')
-    expect(parsed.content).not.toContain('60 | Line 60')
+    expect(parsed.content).toContain('449 | Line 449')
+    expect(parsed.content).not.toContain('450 | Line 450')
+    expect(parsed.hint).toBeUndefined()
+  })
+
+  it('widens tiny read windows to the minimum to save model rounds', async () => {
+    const filePath = 'wide.txt'
+    const content = Array.from({ length: 1000 }, (_, i) => `Line ${i + 1}`).join('\n')
+    await executeCodeWrite({ path: filePath, content, project: 'TestProject' }, stateManager)
+
+    const readRes = await executeCodeRead(
+      { path: filePath, project: 'TestProject', offset: 100, limit: 20 },
+      stateManager
+    )
+    const parsed = JSON.parse(readRes.instruction)
+    expect(parsed.limit).toBe(300)
+    expect(parsed.returnedLines).toBe(300)
+    expect(parsed.content).toContain('100 | Line 100')
+    expect(parsed.content).toContain('399 | Line 399')
+    expect(parsed.nextOffset).toBe(400)
+    expect(parsed.hint).toContain('20')
+  })
+
+  it('stops a widened read at the end of a short file', async () => {
+    const filePath = 'short.txt'
+    const content = Array.from({ length: 150 }, (_, i) => `Line ${i + 1}`).join('\n')
+    await executeCodeWrite({ path: filePath, content, project: 'TestProject' }, stateManager)
+
+    const readRes = await executeCodeRead(
+      { path: filePath, project: 'TestProject', offset: 50, limit: 10 },
+      stateManager
+    )
+    const parsed = JSON.parse(readRes.instruction)
+    expect(parsed.returnedLines).toBe(101)
+    expect(parsed.hasMore).toBe(false)
+    expect(parsed.content).toContain('150 | Line 150')
   })
 
   it('edits file with multiple atomic chunks and CRLF tolerance', async () => {
