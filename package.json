@@ -1,6 +1,6 @@
 {
   "name": "momai-code",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "MomAI Code: terminal and file tools with project workspaces and ordered terminal rules.",
   "type": "commonjs",
