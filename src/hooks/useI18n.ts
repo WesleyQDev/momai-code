@@ -3,10 +3,11 @@ import { getSDK } from 'momai:sdk'
 
 const DEFAULT_LOCALE = 'en-US'
 
-const STRINGS: Record<string, Record<string, string>> = {
+export const STRINGS: Record<string, Record<string, string>> = {
   'pt-BR': {
     'app.loading': 'Carregando...',
     'app.title': 'MomAI Code',
+    'chat.noGit': 'Sem git',
     'overview.tip1': 'Dica: peça no chat para editar ou criar arquivos dentro de um projeto autorizado.',
     'overview.tip2': 'Sabia que cada comando de terminal passa pelas regras antes de ser executado?',
     'overview.tip3': 'Comandos de risco só rodam depois da sua aprovação, em um card no chat.',
@@ -22,10 +23,12 @@ const STRINGS: Record<string, Record<string, string>> = {
     'projects.title': 'Projetos de Trabalho',
     'projects.subtitle': 'Pastas que o agente pode ler e editar. Sem um projeto ativo, ele trabalha apenas na pasta pessoal.',
     'projects.home': 'Sem projeto (Home)',
+    'projects.noProject': 'Sem Projeto',
     'projects.homeDesc': 'Diretório pessoal do usuário fixado no topo como base padrão. Não removível.',
     'projects.empty': 'Nenhum projeto adicional cadastrado. O agente opera exclusivamente na pasta pessoal.',
     'projects.addBtn': 'Adicionar Projeto',
     'projects.adding': 'Adicionando...',
+    'projects.openingFolder': 'Abrindo explorador...',
     'projects.openBtn': 'Abrir Projetos...',
     'projects.activeProjects': 'projetos autorizados',
     'projects.remove': 'Remover',
@@ -90,6 +93,7 @@ const STRINGS: Record<string, Record<string, string>> = {
   'en-US': {
     'app.loading': 'Loading...',
     'app.title': 'MomAI Code',
+    'chat.noGit': 'No git',
     'overview.tip1': 'Tip: ask the chat to edit or create files inside an authorized project.',
     'overview.tip2': 'Did you know every terminal command goes through the rules before running?',
     'overview.tip3': 'Risky commands only run after you approve them in a card in the chat.',
@@ -105,10 +109,12 @@ const STRINGS: Record<string, Record<string, string>> = {
     'projects.title': 'Work Projects',
     'projects.subtitle': 'Folders the agent can read and edit. With no active project it works only in your home folder.',
     'projects.home': 'No Project (Home)',
+    'projects.noProject': 'No Project',
     'projects.homeDesc': 'User home directory pinned at top as the default base. Non-removable.',
     'projects.empty': 'No additional projects added. The agent works strictly in your home directory.',
     'projects.addBtn': 'Add Project',
     'projects.adding': 'Adding...',
+    'projects.openingFolder': 'Opening explorer...',
     'projects.openBtn': 'Open Projects...',
     'projects.activeProjects': 'authorized projects',
     'projects.remove': 'Remove',
@@ -173,6 +179,7 @@ const STRINGS: Record<string, Record<string, string>> = {
   'es': {
     'app.loading': 'Cargando...',
     'app.title': 'MomAI Code',
+    'chat.noGit': 'Sin git',
     'overview.tip1': 'Consejo: pide en el chat editar o crear archivos dentro de un proyecto autorizado.',
     'overview.tip2': '¿Sabías que cada comando de terminal pasa por las reglas antes de ejecutarse?',
     'overview.tip3': 'Los comandos de riesgo solo se ejecutan tras tu aprobación, en una tarjeta del chat.',
@@ -188,10 +195,12 @@ const STRINGS: Record<string, Record<string, string>> = {
     'projects.title': 'Proyectos de Trabajo',
     'projects.subtitle': 'Carpetas que el agente puede leer y editar. Sin un proyecto activo, trabaja solo en la carpeta personal.',
     'projects.home': 'Sin proyecto (Home)',
+    'projects.noProject': 'Sin proyecto',
     'projects.homeDesc': 'Directorio personal del usuario fijado como base predeterminada.',
     'projects.empty': 'No hay proyectos adicionales registrados.',
     'projects.addBtn': 'Añadir Proyecto',
     'projects.adding': 'Añadiendo...',
+    'projects.openingFolder': 'Abriendo explorador...',
     'projects.openBtn': 'Abrir Proyectos...',
     'projects.activeProjects': 'proyectos autorizados',
     'projects.remove': 'Eliminar',
@@ -256,6 +265,7 @@ const STRINGS: Record<string, Record<string, string>> = {
   'fr': {
     'app.loading': 'Chargement...',
     'app.title': 'MomAI Code',
+    'chat.noGit': 'Sans git',
     'overview.tip1': 'Astuce : demandez au chat de modifier ou créer des fichiers dans un projet autorisé.',
     'overview.tip2': 'Le saviez-vous ? Chaque commande de terminal passe par les règles avant d\u2019être exécutée.',
     'overview.tip3': 'Les commandes risquées ne s\u2019exécutent qu\u2019après votre confirmation, dans une carte du chat.',
@@ -271,10 +281,12 @@ const STRINGS: Record<string, Record<string, string>> = {
     'projects.title': 'Projets de Travail',
     'projects.subtitle': 'Dossiers que l\u2019agent peut lire et modifier. Sans projet actif, il travaille uniquement dans votre dossier personnel.',
     'projects.home': 'Sans projet (Home)',
+    'projects.noProject': 'Sans projet',
     'projects.homeDesc': 'Dossier personnel fixé comme base par défaut.',
     'projects.empty': 'Aucun projet supplémentaire configuré.',
     'projects.addBtn': 'Ajouter un Projet',
     'projects.adding': 'Ajout en cours...',
+    'projects.openingFolder': 'Ouverture de l\u2019explorateur...',
     'projects.openBtn': 'Ouvrir les Projets...',
     'projects.activeProjects': 'projets autorisés',
     'projects.remove': 'Supprimer',
@@ -339,6 +351,7 @@ const STRINGS: Record<string, Record<string, string>> = {
   'de': {
     'app.loading': 'Wird geladen...',
     'app.title': 'MomAI Code',
+    'chat.noGit': 'Kein Git',
     'overview.tip1': 'Tipp: Bitte den Chat, Dateien in einem freigegebenen Projekt zu bearbeiten oder zu erstellen.',
     'overview.tip2': 'Wusstest du, dass jeder Terminal-Befehl vor der Ausführung die Regeln durchläuft?',
     'overview.tip3': 'Riskante Befehle laufen erst nach deiner Bestätigung in einer Card im Chat.',
@@ -354,10 +367,12 @@ const STRINGS: Record<string, Record<string, string>> = {
     'projects.title': 'Arbeitsprojekte',
     'projects.subtitle': 'Ordner, die der Agent lesen und bearbeiten darf. Ohne aktives Projekt arbeitet er nur im persönlichen Ordner.',
     'projects.home': 'Kein Projekt (Home)',
+    'projects.noProject': 'Kein Projekt',
     'projects.homeDesc': 'Benutzer-Stammverzeichnis als feste Basis.',
     'projects.empty': 'Keine zusätzlichen Projekte eingerichtet.',
     'projects.addBtn': 'Projekt Hinzufügen',
     'projects.adding': 'Wird hinzugefügt...',
+    'projects.openingFolder': 'Explorer wird geöffnet...',
     'projects.openBtn': 'Projekte Öffnen...',
     'projects.activeProjects': 'freigegebene Projekte',
     'projects.remove': 'Entfernen',
@@ -422,6 +437,7 @@ const STRINGS: Record<string, Record<string, string>> = {
   'it': {
     'app.loading': 'Caricamento...',
     'app.title': 'MomAI Code',
+    'chat.noGit': 'Senza git',
     'overview.tip1': 'Suggerimento: chiedi nella chat di modificare o creare file in un progetto autorizzato.',
     'overview.tip2': 'Sapevi che ogni comando di terminale passa dalle regole prima di essere eseguito?',
     'overview.tip3': 'I comandi rischiosi partono solo dopo l\u2019approvazione, in una scheda della chat.',
@@ -437,10 +453,12 @@ const STRINGS: Record<string, Record<string, string>> = {
     'projects.title': 'Progetti di Lavoro',
     'projects.subtitle': 'Cartelle che l\u2019agente può leggere e modificare. Senza un progetto attivo lavora solo nella cartella personale.',
     'projects.home': 'Senza progetto (Home)',
+    'projects.noProject': 'Senza progetto',
     'projects.homeDesc': 'Cartella personale dell\u2019utente impostata come base predefinita.',
     'projects.empty': 'Nessun progetto aggiuntivo configurato.',
     'projects.addBtn': 'Aggiungi Progetto',
     'projects.adding': 'Aggiunta in corso...',
+    'projects.openingFolder': 'Apertura esplora risorse...',
     'projects.openBtn': 'Apri Progetti...',
     'projects.activeProjects': 'progetti autorizzati',
     'projects.remove': 'Rimuovi',
@@ -523,11 +541,15 @@ export function useI18n() {
   }, [])
 
   const t = useCallback(
-    (key: string): string => {
+    (key: string, vars?: Record<string, string | number>): string => {
       const locDict = STRINGS[locale] || STRINGS[DEFAULT_LOCALE] || STRINGS['pt-BR']
-      if (locDict[key]) return locDict[key]
-      const fallbackDict = STRINGS[DEFAULT_LOCALE] || STRINGS['pt-BR']
-      return fallbackDict[key] || key
+      let text = locDict[key] || STRINGS[DEFAULT_LOCALE]?.[key] || STRINGS['pt-BR']?.[key] || key
+      if (vars) {
+        for (const [k, v] of Object.entries(vars)) {
+          text = text.replaceAll(`{${k}}`, String(v))
+        }
+      }
+      return text
     },
     [locale]
   )
