@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { getSDK } from 'momai:sdk'
+import { useI18n } from './hooks/useI18n.ts'
 
 interface Project {
   id: string
@@ -24,6 +25,7 @@ async function activateCodeSkill(threadId: string): Promise<void> {
 }
 
 export default function ChatProjectSelector({ threadId = 'default' }: ChatProjectProps) {
+  const { t } = useI18n()
   const [activeProject, setActiveProject] = useState<Project | null>(null)
   const [gitBranch, setGitBranch] = useState<string | null>(null)
   const [projects, setProjects] = useState<Project[]>([])
@@ -102,7 +104,7 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
       if (sdk.dialog?.selectDirectory) {
         try {
           const picked = await sdk.dialog.selectDirectory({
-            title: 'Selecionar Pasta do Projeto - MomAI Code'
+            title: t('projects.dialogTitle')
           })
           if (picked && !picked.canceled && picked.path) {
             chosenPath = picked.path
@@ -149,6 +151,9 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
     }
   }
 
+  const noProjectLabel = t('projects.noProject')
+  const noGitLabel = t('chat.noGit')
+
   return (
     <div
       ref={dropdownRef}
@@ -159,7 +164,7 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         className="flex items-center gap-1.5 bg-transparent hover:bg-input/60 active:bg-input rounded-md px-1.5 py-1 text-xs text-text-muted hover:text-text transition-colors cursor-pointer focus:outline-none border-none"
-        title={activeProject ? activeProject.name : 'Sem Projeto'}
+        title={activeProject ? activeProject.name : noProjectLabel}
       >
         {/* Ícone de código/projeto */}
         <div
@@ -184,7 +189,7 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
         </div>
 
         <span className="font-medium max-w-[150px] truncate text-text">
-          {activeProject ? activeProject.name : 'Sem Projeto'}
+          {activeProject ? activeProject.name : noProjectLabel}
         </span>
 
         {/* Chevron down */}
@@ -207,7 +212,7 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
       {/* Git branch info */}
       <div
         className="flex items-center gap-1 text-xs text-text-muted/80 max-w-[180px] truncate"
-        title={gitBranch ? `Branch: ${gitBranch}` : 'Sem git'}
+        title={gitBranch ? `Branch: ${gitBranch}` : noGitLabel}
       >
         <svg
           className="w-3.5 h-3.5 text-text-muted/60 shrink-0"
@@ -223,7 +228,7 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
           <circle cx="6" cy="18" r="3" />
           <path d="M18 9a9 9 0 0 1-9 9" />
         </svg>
-        <span className="truncate">{gitBranch || 'Sem git'}</span>
+        <span className="truncate">{gitBranch || noGitLabel}</span>
       </div>
 
       {/* Dropdown Menu suspenso */}
@@ -251,7 +256,7 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
               <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
-            <span className="truncate flex-1">Sem Projeto</span>
+            <span className="truncate flex-1">{noProjectLabel}</span>
             {!activeProject && <span className="w-1.5 h-1.5 rounded-full bg-text-muted shrink-0" />}
           </button>
 
@@ -313,7 +318,7 @@ export default function ChatProjectSelector({ threadId = 'default' }: ChatProjec
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
             <span className="truncate flex-1">
-              {isAdding ? 'Abrindo explorador...' : 'Adicionar projeto'}
+              {isAdding ? t('projects.openingFolder') : t('projects.addBtn')}
             </span>
           </button>
         </div>

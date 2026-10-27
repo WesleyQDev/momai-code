@@ -11,7 +11,10 @@
     "allowJs": false,
     "noEmit": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "momai:sdk": ["./src/sdk-shim.d.ts"]
+    }
   },
   "include": [
     "runtime.ts",
