@@ -8,6 +8,7 @@ const { executeCodeGlob, executeCodeGrep } = require('./tools/search.ts')
 const { executeCodeSettings } = require('./routes/settings.ts')
 const { executeCodeProjectConfirm, executeCodeProjectCancel } = require('./routes/projects.ts')
 const { executeCodeCommandPolicy } = require('./tools/policy.ts')
+const { executeCodeProcess } = require('./tools/process.ts')
 const { executeCodeRollback } = require('./tools/rollback.ts')
 
 const stateManager = new CodeStateManager()
@@ -86,6 +87,8 @@ async function execute(payloadOrTool: any, maybeArgs?: any, maybeContext?: any):
         return await executeCodeProjectRequest(args, stateManager, context)
       case 'code_command_policy':
         return await executeCodeCommandPolicy(args, stateManager, context)
+      case 'code_process':
+        return await executeCodeProcess(args, stateManager, context)
       case 'code_glob':
         return await executeCodeGlob(args, stateManager, context)
       case 'code_grep':

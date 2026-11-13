@@ -42,11 +42,29 @@ let isShuttingDown = false
 async function shutdown() {
   if (isShuttingDown) return
   isShuttingDown = true
+  // Background terminals started by this extension must not outlive the app.
+  try {
+    require('./core/processes.ts').stopAllProcesses()
+  } catch {
+    /* cleanup must never block the shutdown */
+  }
   process.exit?.(0)
 }
 
 process.on?.('SIGTERM', () => shutdown())
 process.on?.('SIGINT', () => shutdown())
+// The host is gone without a goodbye (crash, tree-kill on quit): the closing
+// IPC channel is the only signal left. Clean up the same way as shutdown.
+process.on?.('disconnect', () => shutdown())
+process.on?.('exit', () => {
+  if (isShuttingDown) return
+  isShuttingDown = true
+  try {
+    require('./core/processes.ts').stopAllProcesses()
+  } catch {
+    /* cleanup must never block the shutdown */
+  }
+})
 
 process.on?.('message', async (msg: any) => {
   if (!msg || typeof msg !== 'object') return
@@ -79,6 +97,19 @@ process.on?.('message', async (msg: any) => {
     })
   }
 })
+
+// A previous generation may have died without cleanup (hard kill on reload,
+// app quit, crash): such shells are still marked running, and a shell that
+// returned while its command kept serving leaves the command reachable only
+// through it. Reap them, but after `ready` so startup is never delayed.
+setTimeout(() => {
+  try {
+    const reaped = require('./core/processes.ts').reapOrphanedProcesses()
+    if (reaped > 0) momai.log(`Finalizados ${reaped} processo(s) em segundo plano de sessão anterior.`)
+  } catch {
+    /* a dirty store must never break the worker */
+  }
+}, 0)
 
 // Signal host that persistent worker is initialized and ready
 send({ type: 'ready', worker: 'momai-code' })

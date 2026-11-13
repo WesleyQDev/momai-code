@@ -1,7 +1,7 @@
-const { spawn, execSync } = require('node:child_process')
-const fs = require('node:fs')
-const path = require('node:path')
+const { spawn } = require('node:child_process')
 import type { MomAiCodeSettings } from './types.ts'
+const { resolveWindowsPowerShell, buildShellInvocation } = require('./shell.ts')
+const { killTree: killProcessTreeShared } = require('./process-tree.cjs')
 
 export interface ProcessRunResult {
   exitCode: number
@@ -12,9 +12,45 @@ export interface ProcessRunResult {
   timedOut: boolean
   /** Shell actually used for the command (powershell, cmd or bash). */
   shell: string
+  /** Set when the command outlived its timeout and was kept running. */
+  background?: { id: string; pid: number; file: string }
 }
 
 const MAX_OUTPUT_BYTES = 64 * 1024 // 64 KB
+
+/**
+ * Port names the host app owns. The host exports them into every child, so a
+ * project script that reads `PORT` (a common convention for dev servers) would
+ * bind the MomAI core port and make the app refuse to boot. They never reach
+ * user commands: a project that wants a port must ask for one explicitly.
+ */
+const HOST_PORT_ENV_KEYS = new Set([
+  'PORT',
+  'MOMAI_API_PORT',
+  'MOMAI_NODE_CORE_PORT',
+  'MOMAI_SERVER_PORT',
+  'MOMAI_PYTHON_SIDECAR_PORT'
+])
+
+/** Child environment for a user command: host port names removed, shell fixed. */
+function buildRunEnv(base: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = {}
+  for (const [key, value] of Object.entries(base)) {
+    if (value === undefined || HOST_PORT_ENV_KEYS.has(key)) continue
+    env[key] = value
+  }
+
+  env.PAGER = 'cat'
+  if (process.platform === 'win32') {
+    env.PATHEXT =
+      base.PATHEXT || '.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC'
+    env.SystemRoot = base.SystemRoot || base.WINDIR || 'C:\\Windows'
+    env.SystemDrive = base.SystemDrive || 'C:'
+    env.COMSPEC = base.COMSPEC || 'C:\\Windows\\System32\\cmd.exe'
+  }
+
+  return env
+}
 
 /**
  * Keeps the beginning and the end of a long output: errors usually land at the
@@ -36,145 +72,91 @@ function truncateOutput(output: string, maxBytes: number = MAX_OUTPUT_BYTES): st
   return `${head}${marker}${tail}`
 }
 
-function killProcessTree(pid: number): void {
-  try {
-    if (process.platform === 'win32') {
-      execSync(`taskkill /pid ${pid} /T /F`, { stdio: 'ignore', windowsHide: true })
-    } else {
-      process.kill(-pid, 'SIGKILL')
+/** Kills the process and its tree; returns whether anything was reachable. */
+function killProcessTree(
+  pid: number,
+  remembered?: number[],
+  preloadedPairs?: Array<{ pid: number; ppid: number }>
+): boolean {
+  return killProcessTreeShared(pid, remembered, preloadedPairs) > 0
+}
+
+const activeForegroundPids = new Set<number>()
+
+function killActiveForegroundProcesses(
+  preloadedPairs?: Array<{ pid: number; ppid: number }>
+): number {
+  let killed = 0
+  for (const pid of [...activeForegroundPids]) {
+    activeForegroundPids.delete(pid)
+    if (killProcessTree(pid, undefined, preloadedPairs)) {
+      killed += 1
     }
-  } catch {
-    // Process might already be terminated
   }
+  return killed
 }
 
-let cachedWindowsShell: string | null = null
-
-/**
- * Windows Store installs expose `pwsh.exe` through an app execution alias under
- * a `WindowsApps` directory. Spawning the alias goes through packaged-app
- * activation, whose console/visibility semantics differ from a plain
- * executable, so aliases are never used as the shell.
- */
-function isWindowsAppsPath(executablePath: string): boolean {
-  return /[\\/]windowsapps[\\/]/i.test(executablePath)
-}
-
-function isRealExecutableFile(executablePath: string): boolean {
-  if (!executablePath || isWindowsAppsPath(executablePath)) return false
+function isAlive(pid: number): boolean {
+  if (!Number.isFinite(pid) || pid <= 0) return false
   try {
-    return fs.statSync(executablePath).isFile()
+    process.kill(pid, 0)
+    return true
   } catch {
     return false
   }
 }
 
-function resolveWindowsPowerShell(): string {
-  if (cachedWindowsShell) return cachedWindowsShell
-
-  const systemRoot = process.env.SystemRoot || process.env.WINDIR || 'C:\\Windows'
-  const driveRoot = path.parse(systemRoot).root || 'C:\\'
-
-  // Genuine PowerShell 7 MSI installs first (never the Store execution alias).
-  const pwshCandidates = [
-    path.join(driveRoot, 'Program Files', 'PowerShell', '7', 'pwsh.exe'),
-    path.join(driveRoot, 'Program Files', 'PowerShell', '7-preview', 'pwsh.exe'),
-    path.join(driveRoot, 'Program Files (x86)', 'PowerShell', '7', 'pwsh.exe')
-  ]
-  for (const candidate of pwshCandidates) {
-    if (isRealExecutableFile(candidate)) {
-      cachedWindowsShell = candidate
-      return cachedWindowsShell
-    }
-  }
-
-  // PATH lookup: `where.exe` also lists Store aliases, so keep only real files.
-  try {
-    const found = execSync('where.exe pwsh.exe', { stdio: 'pipe', encoding: 'utf-8', windowsHide: true })
-    const fromPath = String(found || '')
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .find((line) => isRealExecutableFile(line))
-    if (fromPath) {
-      cachedWindowsShell = fromPath
-      return cachedWindowsShell
-    }
-  } catch {}
-
-  // Windows PowerShell 5.1 ships with the OS and is always a plain executable.
-  const powershellPath = path.join(systemRoot, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe')
-  cachedWindowsShell = isRealExecutableFile(powershellPath) ? powershellPath : 'powershell.exe'
-  return cachedWindowsShell
-}
-
+/**
+ * Runs a command and waits for it to finish. When it outlives `timeoutMs` the
+ * process is not killed: it is adopted as a background process, its output keeps
+ * streaming to a file and the caller gets the id back. That is what keeps the
+ * chat responsive around dev servers and watchers.
+ */
 async function runProcess(
   command: string,
   cwd: string,
   options?: {
     timeoutMs?: number
     shellPreference?: MomAiCodeSettings['shell']
+    threadId?: string
+    /** Set to false to kill the process on timeout instead of adopting it. */
+    promoteOnTimeout?: boolean
   }
 ): Promise<ProcessRunResult> {
   const timeoutMs = options?.timeoutMs && options.timeoutMs > 0 ? options.timeoutMs : 30000
-  const shellPref = options?.shellPreference || 'powershell'
-
-  let shellExecutable: string
-  let shellArgs: string[]
-  let shellName: string
-
-  if (process.platform === 'win32') {
-    if (shellPref === 'cmd') {
-      shellExecutable = 'cmd.exe'
-      shellArgs = ['/c', command]
-      shellName = 'cmd'
-    } else {
-      // Modern pwsh if installed on machine, fallback to powershell.exe
-      shellExecutable = resolveWindowsPowerShell()
-      shellArgs = [
-        '-NoLogo',
-        '-NoProfile',
-        '-NonInteractive',
-        '-ExecutionPolicy',
-        'Bypass',
-        '-Command',
-        command
-      ]
-      shellName = 'powershell'
-    }
-  } else {
-    shellExecutable = '/bin/bash'
-    shellArgs = ['-c', command]
-    shellName = 'bash'
-  }
+  const { executable, args, name: shellName } = buildShellInvocation(
+    command,
+    options?.shellPreference || 'powershell'
+  )
+  const promoteOnTimeout = options?.promoteOnTimeout !== false
 
   const startTime = Date.now()
 
   return new Promise<ProcessRunResult>((resolve) => {
     let child: any
-    let timedOut = false
+    let settled = false
+    let promoted = false
     let timer: NodeJS.Timeout | null = null
 
-    const runEnv = {
-      ...process.env,
-      PAGER: 'cat',
-      ...(process.platform === 'win32'
-        ? {
-            PATHEXT: process.env.PATHEXT || '.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC',
-            SystemRoot: process.env.SystemRoot || process.env.WINDIR || 'C:\\Windows',
-            SystemDrive: process.env.SystemDrive || 'C:',
-            COMSPEC: process.env.COMSPEC || 'C:\\Windows\\System32\\cmd.exe'
-          }
-        : {})
+    const runEnv = buildRunEnv(process.env)
+
+    const finish = (result: ProcessRunResult): void => {
+      if (settled) return
+      settled = true
+      if (child?.pid) activeForegroundPids.delete(child.pid)
+      if (timer) clearTimeout(timer)
+      resolve(result)
     }
 
     try {
-      child = spawn(shellExecutable, shellArgs, {
+      child = spawn(executable, args, {
         cwd,
         detached: process.platform !== 'win32',
         windowsHide: true,
         stdio: ['ignore', 'pipe', 'pipe'],
         env: runEnv
       })
+      if (child?.pid) activeForegroundPids.add(child.pid)
     } catch (err: any) {
       resolve({
         exitCode: 1,
@@ -193,45 +175,66 @@ async function runProcess(
 
     if (child.stdout) {
       child.stdout.on('data', (chunk: Buffer) => {
+        if (promoted) return
         stdoutData += chunk.toString('utf-8')
       })
     }
 
     if (child.stderr) {
       child.stderr.on('data', (chunk: Buffer) => {
+        if (promoted) return
         stderrData += chunk.toString('utf-8')
       })
     }
 
     if (timeoutMs > 0) {
       timer = setTimeout(() => {
-        timedOut = true
+        if (promoted) return
+
+        if (promoteOnTimeout && child.pid && isAlive(child.pid)) {
+          const { adoptRunningProcess } = require('./processes.ts')
+          const adopted = adoptRunningProcess({
+            child,
+            command,
+            cwd,
+            threadId: options?.threadId,
+            collected: stdoutData + stderrData
+          })
+          promoted = true
+          finish({
+            exitCode: 0,
+            stdout: truncateOutput(stdoutData),
+            stderr: truncateOutput(stderrData),
+            durationMs: Date.now() - startTime,
+            cwd,
+            timedOut: true,
+            shell: shellName,
+            background: adopted
+          })
+          return
+        }
+
         if (child.pid) killProcessTree(child.pid)
       }, timeoutMs)
     }
 
     child.on('close', (code: number | null) => {
-      if (timer) clearTimeout(timer)
+      if (promoted) return
       const durationMs = Date.now() - startTime
-      const exitCode = timedOut ? 124 : (code ?? 0)
-      if (timedOut) {
-        stderrData += `\n[Processo interrompido: excedeu o tempo limite de ${timeoutMs}ms]`
-      }
-
-      resolve({
-        exitCode,
+      finish({
+        exitCode: code ?? 0,
         stdout: truncateOutput(stdoutData),
         stderr: truncateOutput(stderrData),
         durationMs,
         cwd,
-        timedOut,
+        timedOut: false,
         shell: shellName
       })
     })
 
     child.on('error', (err: any) => {
-      if (timer) clearTimeout(timer)
-      resolve({
+      if (promoted) return
+      finish({
         exitCode: 1,
         stdout: truncateOutput(stdoutData),
         stderr: truncateOutput(stderrData + `\nErro do processo: ${err?.message || err}`),
@@ -248,6 +251,8 @@ module.exports = {
   MAX_OUTPUT_BYTES,
   truncateOutput,
   killProcessTree,
+  killActiveForegroundProcesses,
   resolveWindowsPowerShell,
+  buildRunEnv,
   runProcess
 }
