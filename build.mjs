@@ -9,7 +9,7 @@ const isWatch = process.argv.includes('--watch')
 const external = ['react', 'react-dom', 'react/jsx-runtime', 'momai:sdk']
 
 const uiContexts = []
-for (const entry of ['src/page.tsx', 'src/chat-project.tsx']) {
+for (const entry of ['src/page.tsx', 'src/chat-project.tsx', 'src/chat-terminals.tsx']) {
   const name = path.basename(entry, '.tsx')
   uiContexts.push(
     await context({

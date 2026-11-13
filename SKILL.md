@@ -33,6 +33,7 @@ Terminal, leitura, listagem, gravação, edição e busca de arquivos no ambient
    - baixar e executar código remoto (`curl ... | sh`, `iwr ... | iex`).
 3. **Bloqueados sempre** (sem card): apagar tudo (raiz do disco, Home, raiz de trabalho, `*`, a pasta acima) e ferramentas de disco/boot (`format`, `mkfs`, `diskpart`, `dd of=/dev/`, `fdisk`, `parted`, `bcdedit`, `bootrec`, `vssadmin delete`) — inclusive via `cmd /c` ou `powershell -Command`.
 4. **Aguarde a decisão**; em caso de recusa, explique o que pretendia e proponha alternativa segura. As regras (Permitir/Perguntar/Bloquear) são configuráveis na extensão; não burle com codificações ou truques de shell.
+5. **Servidor, watcher ou build longo**: use `code_bash` com `background: true`. Ele volta na hora com um `shellID` e o processo continua rodando. Não fique consultando; siga a conversa e use `code_process` (`list`, `output`, `stop`) quando precisar. O `list` mostra só os processos da conversa atual. Comando em primeiro plano que estoura o tempo limite não é morto: ele passa para segundo plano e volta com `shellID`.
 
 ## 3. Leitura, edição e busca
 
