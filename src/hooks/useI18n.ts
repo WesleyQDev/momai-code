@@ -89,6 +89,11 @@ export const STRINGS: Record<string, Record<string, string>> = {
     'settings.timeout': 'Tempo limite de comando (segundos)',
     'settings.save': 'Salvar Configurações',
     'settings.saved': 'Configurações salvas!',
+    'terminals.title': 'Terminais em segundo plano',
+    'terminals.empty': 'Nenhum terminal rodando',
+    'terminals.shells.one': '{count} Shell',
+    'terminals.shells.other': '{count} Shells',
+    'terminals.stop': 'Encerrar',
   },
   'en-US': {
     'app.loading': 'Loading...',
@@ -175,6 +180,11 @@ export const STRINGS: Record<string, Record<string, string>> = {
     'settings.timeout': 'Command timeout (seconds)',
     'settings.save': 'Save Settings',
     'settings.saved': 'Settings saved!',
+    'terminals.title': 'Background terminals',
+    'terminals.empty': 'No terminal running',
+    'terminals.shells.one': '{count} Shell',
+    'terminals.shells.other': '{count} Shells',
+    'terminals.stop': 'Stop',
   },
   'es': {
     'app.loading': 'Cargando...',
@@ -261,6 +271,11 @@ export const STRINGS: Record<string, Record<string, string>> = {
     'settings.timeout': 'Límite de tiempo (segundos)',
     'settings.save': 'Guardar Configuración',
     'settings.saved': '¡Guardado!',
+    'terminals.title': 'Terminales en segundo plano',
+    'terminals.empty': 'Ningún terminal en ejecución',
+    'terminals.shells.one': '{count} Shell',
+    'terminals.shells.other': '{count} Shells',
+    'terminals.stop': 'Detener',
   },
   'fr': {
     'app.loading': 'Chargement...',
@@ -347,6 +362,11 @@ export const STRINGS: Record<string, Record<string, string>> = {
     'settings.timeout': 'Délai d\u2019attente (secondes)',
     'settings.save': 'Enregistrer',
     'settings.saved': 'Enregistré !',
+    'terminals.title': 'Terminaux en arrière-plan',
+    'terminals.empty': 'Aucun terminal en cours',
+    'terminals.shells.one': '{count} Shell',
+    'terminals.shells.other': '{count} Shells',
+    'terminals.stop': 'Arrêter',
   },
   'de': {
     'app.loading': 'Wird geladen...',
@@ -433,6 +453,11 @@ export const STRINGS: Record<string, Record<string, string>> = {
     'settings.timeout': 'Zeitlimit (Sekunden)',
     'settings.save': 'Speichern',
     'settings.saved': 'Gespeichert!',
+    'terminals.title': 'Terminals im Hintergrund',
+    'terminals.empty': 'Kein Terminal aktiv',
+    'terminals.shells.one': '{count} Shell',
+    'terminals.shells.other': '{count} Shells',
+    'terminals.stop': 'Beenden',
   },
   'it': {
     'app.loading': 'Caricamento...',
@@ -519,6 +544,11 @@ export const STRINGS: Record<string, Record<string, string>> = {
     'settings.timeout': 'Timeout (secondi)',
     'settings.save': 'Salva Impostazioni',
     'settings.saved': 'Impostazioni salvate!',
+    'terminals.title': 'Terminali in background',
+    'terminals.empty': 'Nessun terminale in esecuzione',
+    'terminals.shells.one': '{count} Shell',
+    'terminals.shells.other': '{count} Shells',
+    'terminals.stop': 'Termina',
   }
 }
 

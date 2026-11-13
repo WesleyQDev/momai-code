@@ -139,6 +139,11 @@
         "id": "momai-code-project-selector",
         "entry": "dist/chat-project.js",
         "position": "bottom"
+      },
+      {
+        "id": "momai-code-terminals",
+        "entry": "dist/chat-terminals.js",
+        "position": "input_top"
       }
     ]
   },
@@ -165,6 +170,11 @@
       "method": "POST",
       "path": "/settings",
       "tool": "code_settings"
+    },
+    {
+      "method": "POST",
+      "path": "/processes",
+      "tool": "code_process"
     }
   ],
   "tools": [
@@ -187,12 +197,47 @@
           },
           "timeoutMs": {
             "type": "number",
-            "description": "Tempo limite de execução em milissegundos (padrão 30000)."
+            "description": "Tempo limite de execução em milissegundos (padrão 30000). Ao estourar, o comando NÃO é morto: ele passa a rodar em segundo plano e volta com um shellID."
+          },
+          "background": {
+            "type": "boolean",
+            "description": "Inicia o comando em segundo plano e volta na hora, sem esperar terminar. Use para servidor, watcher ou build longo. O processo continua rodando; use code_process para listar, ver a saída ou encerrar."
           }
         },
         "required": [
           "command"
         ]
+      }
+    },
+    {
+      "name": "code_process",
+      "description": "Gerencia comandos de terminal em segundo plano: lista os que estão rodando, mostra o final da saída e encerra o processo. Não use para rodar comando; para isso use code_bash com background=true.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["list", "output", "stop"],
+            "description": "list = processos rodando nesta conversa; output = final da saída de um processo; stop = encerra o processo e seus filhos."
+          },
+          "threadId": {
+            "type": "string",
+            "description": "Em list, filtra os processos da conversa (padrão: a conversa atual)."
+          },
+          "id": {
+            "type": "string",
+            "description": "shellID devolvido por code_bash. Obrigatório em output e stop."
+          },
+          "includeEnded": {
+            "type": "boolean",
+            "description": "Em list, inclui processos já finalizados."
+          },
+          "limitBytes": {
+            "type": "number",
+            "description": "Em output, quantos bytes do final ler (padrão 65536)."
+          }
+        },
+        "required": ["action"]
       }
     },
     {

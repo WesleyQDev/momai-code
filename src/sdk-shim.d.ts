@@ -37,3 +37,5 @@ export interface MomAISDK {
 }
 
 export declare function getSDK(): MomAISDK
+declare const sdk: MomAISDK
+export default sdk
