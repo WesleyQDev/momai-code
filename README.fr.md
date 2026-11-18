@@ -1,7 +1,5 @@
 # MomAI Code
 
-[English](README.md) · [Português](README.pt-BR.md) · [Español](README.es.md) · **Français** · [Italiano](README.it.md) · [Deutsch](README.de.md)
-
 MomAI Code laisse votre assistant travailler sur votre code. Il exécute des commandes dans le terminal, lit et modifie des fichiers et reste dans le dossier du projet que vous avez autorisé.
 
 ## Ce que vous pouvez faire

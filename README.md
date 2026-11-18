@@ -1,7 +1,5 @@
 # MomAI Code
 
-**English** · [Português](README.pt-BR.md) · [Español](README.es.md) · [Français](README.fr.md) · [Italiano](README.it.md) · [Deutsch](README.de.md)
-
 MomAI Code gives your assistant room to work on code. It runs terminal commands, reads and edits files, and stays inside the project folder you allowed.
 
 ## What you can do
